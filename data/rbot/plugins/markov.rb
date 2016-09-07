@@ -183,9 +183,6 @@ class MarkovPlugin < Plugin
     @upgrade_queue.push nil
 
     @upgrade_thread = Thread.new do
-      @registry.recovery = Proc.new { |val|
-        return [val]
-      }
       logfile = File.open(@bot.path('markov-conversion.log'), 'a')
       logfile.puts "=== conversion thread started #{Time.now} ==="
       while k = @upgrade_queue.pop
@@ -202,7 +199,6 @@ class MarkovPlugin < Plugin
       end
       logfile.puts "=== conversion thread stopped #{Time.now} ==="
       logfile.close
-      @registry.recovery = nil
     end
     @upgrade_thread.priority = -1
   end
@@ -366,12 +362,8 @@ class MarkovPlugin < Plugin
       else
         "markov chat => try to say something intelligent"
       end
-    when "learn"
-      ["markov learn from <file> [testing [<num> lines]] [using pattern <pattern>]:",
-       "learn from the text in the specified <file>, optionally using the given <pattern> to filter the text.",
-       "you can sample what would be learned by specifying 'testing <num> lines'"].join(' ')
     else
-      "markov plugin: listens to chat to build a markov chain, with which it can (perhaps) attempt to (inanely) contribute to 'discussion'. Sort of.. Will get a *lot* better after listening to a lot of chat. Usage: 'chat' to attempt to say something relevant to the last line of chat, if it can -- help topics: ignore, readonly, delay, status, probability, chat, chat about, learn"
+      "markov plugin: listens to chat to build a markov chain, with which it can (perhaps) attempt to (inanely) contribute to 'discussion'. Sort of.. Will get a *lot* better after listening to a lot of chat. Usage: 'chat' to attempt to say something relevant to the last line of chat, if it can -- help topics: ignore, readonly, delay, status, probability, chat, chat about"
     end
   end
 

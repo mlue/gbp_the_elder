@@ -41,7 +41,7 @@ class KarmaPlugin < Plugin
   def karma(m, params)
     thing = params[:key]
     thing = m.sourcenick unless thing
-    thing = thing.to_s
+    thing = thing.to_s.downcase
     karma = @registry[thing]
     if(karma != 0)
       m.reply "karma for #{thing}: #{@registry[thing]}"

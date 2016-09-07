@@ -143,6 +143,7 @@ class RemindPlugin < Plugin
 end
 plugin = RemindPlugin.new
 
+
 plugin.default_auth('other', false)
 
 plugin.map 'remind me no more', :action => 'no_more'

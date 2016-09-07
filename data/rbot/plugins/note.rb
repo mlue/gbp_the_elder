@@ -9,56 +9,34 @@
 # License:: MIT license
 
 class NotePlugin < Plugin
-
   Note = Struct.new('Note', :time, :from, :private, :text)
 
-  Config.register Config::BooleanValue.new 'note.private_message',
-    :default => false,
-    :desc => 'Send all notes in private messages instead of channel messages.'
-
-  def initialize
-    super
-    return if @registry.length < 1
-    debug 'Checking registry for old-formatted notes...'
-    n = 0
-    @registry.keys.each do |key|
-      unless key == key.downcase
-        @registry[key.downcase] = @registry[key] + (@registry[key.downcase] || [])
-        @registry.delete key
-        n += 1
-      end
-    end
-    debug "#{n} entries converted and merged."
+  def help(plugin, topic="")
+    "note <nick> <string> => stores a note (<string>) for <nick>"
   end
 
-  def help(plugin, topic='')
-    'note <nick> <string> => stores a note (<string>) for <nick>'
+  def pare_keys(keye)
+    keye.downcase.gsub(Regexp.new('(?:_|\^)[^\^|\|]*$'),'')
   end
-
+  
   def message(m)
     begin
-      nick = m.sourcenick.downcase
-      # Keys are case insensitive to avoid storing a message
-      # for <person> instead of <Person> or visa-versa.
-      return unless @registry.has_key? nick
+      return unless @registry.has_key? pare_keys(m.sourcenick)
       pub = []
       priv = []
-      @registry[nick].each do |n|
-        s = "[#{n.time.strftime('%b-%e %H:%M')}] <#{n.from}> #{n.text}"
-        if n.private or @bot.config['note.private_message']
-          priv << s
-        else
-          pub << s
-        end
+      @registry[pare_keys(m.sourcenick)].each do |n|
+        s = "[#{n.time.strftime('%H:%M')}] <#{n.from}> #{n.text}"
+        (n.private ? priv : pub).push s
       end
-      unless pub.empty?
+      if !pub.empty?
         @bot.say m.replyto, "#{m.sourcenick}, you have notes! " +
           pub.join(' ')
       end
-      unless priv.empty?
-        @bot.say m.sourcenick, 'you have notes! ' + priv.join(' ')
+
+      if !priv.empty?
+        @bot.say m.sourcenick, "you have notes! " + priv.join(' ')
       end
-      @registry.delete nick
+      @registry.delete pare_keys(m.sourcenick)
     rescue Exception => e
       m.reply e.message
     end
@@ -66,13 +44,21 @@ class NotePlugin < Plugin
 
   def note(m, params)
     begin
-      nick = params[:nick].downcase
-      q = @registry[nick] || Array.new
+      q = @registry[pare_keys(params[:nick])] || Array.new
       s = params[:string].to_s.strip
       raise 'cowardly discarding the empty note' if s.empty?
-      q.push Note.new(Time.now, m.sourcenick, m.private?, s)
-      @registry[nick] = q
-      m.okay
+      qq = q.collect{|f| f.from == pare_keys(m.sourcenick)}
+      if qq.size > 3
+        debug __FILE__
+        m.reply "Stop trying to spam notes you petrified rhinoceros pizzle"
+        q.shift
+        q.push Note.new(Time.now, pare_keys(m.sourcenick), m.private?, s)
+        @registry[pare_keys(params[:nick])] = q
+      else
+        q.push Note.new(Time.now, pare_keys(m.sourcenick), m.private?, s)
+        @registry[pare_keys(params[:nick])] = q
+        m.okay
+      end
     rescue Exception => e
       m.reply "error: #{e.message}"
     end
