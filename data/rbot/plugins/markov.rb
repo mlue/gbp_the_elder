@@ -51,7 +51,7 @@ class MarkovPlugin < Plugin
 
   #PATTERN = [["PRP", "VBP", "JJ"],["IN", "PRP", "VBP", "JJ", "VBP", "DT", "NN"],["JJ", "DT", "NN", "VB"],["NNP", "RB", "NN", "PRP", "VBP", "TO", "VB", "PRP", "NN"], ["NNP", "PRP", "VBP", "PRP", "VBD", "DT", "NN", "IN", "NN"], ["VB", "NN"], ["PRP", "JJ", "CC", "JJ"], ["JJ"], ["NN", "IN", "NN"], ["VB", "VB", "JJ"],["FW", "NN", "WRB", "PRP", "VBD", "JJ"], ["FW", "NN"],["VB", "DT", "NN"], ["FW", "FW", "VBP", "PRP"]]
 
-  PATTERN = [["PRP", "VBP", "DT", "NN"], [["PRP", "VBP", "NN"],  ["VB", "RB"], ["RB", "PRP", "MD", "VB"], ["NN"], ["VBP", "PRP", "CD"], ["DT", "NN", "CC", "DT", "NN", "VBZ", "NN"], ["PRP", "VBP", "JJ"],["IN", "PRP", "VBP", "JJ", "VBP", "DT", "NN"],["JJ", "DT", "NN", "VB"],["NNP", "RB", "NN", "PRP", "VBP", "TO", "VB", "PRP", "NN"], ["NNP", "PRP", "VBP", "PRP", "VBD", "DT", "NN", "IN", "NN"], ["VB", "NN"], ["PRP", "JJ", "CC", "JJ"], ["JJ"], ["NN", "IN", "NN"], ["VB", "VB", "JJ"],["FW", "NN", "WRB", "PRP", "VBD", "JJ"], ["FW", "NN"],["VB", "DT", "NN"], ["FW", "FW", "VBP", "PRP"] ]
+  PATTERN = [["PRP", "VBP", "DT", "NN"], ["PRP", "VBP", "NN"],  ["VB", "RB"], ["RB", "PRP", "MD", "VB"], ["NN"], ["VBP", "PRP", "CD"], ["DT", "NN", "CC", "DT", "NN", "VBZ", "NN"], ["PRP", "VBP", "JJ"],["IN", "PRP", "VBP", "JJ", "VBP", "DT", "NN"],["JJ", "DT", "NN", "VB"],["NNP", "RB", "NN", "PRP", "VBP", "TO", "VB", "PRP", "NN"], ["NNP", "PRP", "VBP", "PRP", "VBD", "DT", "NN", "IN", "NN"], ["VB", "NN"], ["PRP", "JJ", "CC", "JJ"], ["JJ"], ["NN", "IN", "NN"], ["VB", "VB", "JJ"],["FW", "NN", "WRB", "PRP", "VBD", "JJ"], ["FW", "NN"],["VB", "DT", "NN"], ["FW", "FW", "VBP", "PRP"]]
             
   HPATTERN = [["PRP", "VBP", "VBG", "NN"], ["PRP", "VBP", "JJ"], ["RB", "PRP", "MD", "VB"]]
 
@@ -578,7 +578,8 @@ class MarkovPlugin < Plugin
                 PATTERN
               end
 
-        pairs = seq_pairs(words.reject{|f| Regexp.union(/^are/i,/^do.*/i,/^will/i,/^what/i).match(f)}).sort_by { rand }
+        pairs = seq_pairs(words).sort_by { rand }
+        #seq_pairs(words.reject{|f| Regexp.union(/^are/i,/^do.*/i,/^will/i,/^what/i).match(f)}).sort_by { rand }
         pairs.each do |word1, word2|
           line = generate_string(word1, word2)
           sent = sentence(line)
