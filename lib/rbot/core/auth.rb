@@ -1040,9 +1040,9 @@ auth.map "whoami",
   :action => 'auth_whoami',
   :auth_path => '!*!'
 
-auth.map "who is :user",
-  :action => 'auth_whois',
-  :auth_path => '!*!'
+# auth.map "who is :user",
+#   :action => 'auth_whois',
+#   :auth_path => '!*!'
 
 auth.map "auth :password",
   :action => 'auth_auth',

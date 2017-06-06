@@ -44,6 +44,8 @@ Please note that the logfile doesn't contain IRC logs (which are located at
 require 'etc'
 require 'getoptlong'
 require 'fileutils'
+require 'rubygems'
+require 'treat'
 
 $version ||= '0.9.15'
 $version_timestamp ||= 0
