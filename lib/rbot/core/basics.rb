@@ -91,6 +91,15 @@ class BasicsModule < CoreBotModule
     @bot.restart param[:msg].to_s
   end
 
+  def bot_mem_restart(m, param)
+    begin
+      x = `ps aux | grep '#{$$}.*ruby.*rbot' | awk '{print $5}' | head -1`.to_i
+      m.reply "#{x > 1000} #{x < 1_200_000}"
+    rescue
+      m.reply 'something went wrong'
+    end
+  end
+
   def bot_reconnect(m, param)
     @bot.reconnect param[:msg].to_s
   end
@@ -200,6 +209,10 @@ basics.map "restart *msg",
   :action => 'bot_restart',
   :defaults => { :msg => nil },
   :auth_path => 'quit'
+basics.map "mem_restart *msg",
+  :action => 'bot_mem_restart',
+  :defaults => { :msg => nil },
+  :auth_path => 'quit'
 basics.map "reconnect *msg",
   :action => 'bot_reconnect',
   :defaults => { :msg => nil },
@@ -249,4 +262,3 @@ basics.map "help *topic",
   :auth_path => '!help!'
 
 basics.default_auth('*', false)
-
