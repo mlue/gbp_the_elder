@@ -944,6 +944,8 @@ class Bot
     func = case sig
            when 'SIGHUP'
              :restart
+           when 'HUP'
+             :restart
            when 'SIGUSR1'
              :reconnect
            else
