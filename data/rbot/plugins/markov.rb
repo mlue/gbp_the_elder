@@ -588,7 +588,7 @@ class MarkovPlugin < Plugin
           sent = sentence(line)
           v = sent.apply(:tokenize,:tag).words.map(&:tag)
           attempt = 0
-          until (  attempt > attempts )
+          until (  attempt > attempts || m.address?)
             attempt += 1
             line = generate_string(word1, word2)
             sent = sentence(line)
@@ -606,7 +606,7 @@ class MarkovPlugin < Plugin
           sent = sentence(line)
           v = sent.apply(:tokenize,:tag).words.map(&:tag)
           attempt = 0
-          until attempt > attempts
+          until attempt > attempts || m.address?
             attempt += 1
             line = generate_string(word.first, nil)
             sent = sentence(line)
