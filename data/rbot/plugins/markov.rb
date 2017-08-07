@@ -580,7 +580,7 @@ class MarkovPlugin < Plugin
                 PATTERN
               end
 
-        words = [["you", w_o.last]].concat(words) if pat == QPATTERN
+        #words = [["you", w_o.last]].concat(words) if pat == QPATTERN
         pairs = seq_pairs(words).sort_by { rand }
         #seq_pairs(words.reject{|f| Regexp.union(/^are/i,/^do.*/i,/^will/i,/^what/i).match(f)}).sort_by { rand }
         pairs.each do |word1, word2|
@@ -588,14 +588,14 @@ class MarkovPlugin < Plugin
           sent = sentence(line)
           v = sent.apply(:tokenize,:tag).words.map(&:tag)
           attempt = 0
-          until (  attempt > attempts || m.address?)
+          until (  attempt > attempts )
             attempt += 1
             line = generate_string(word1, word2)
             sent = sentence(line)
             v = sent.apply(:tokenize,:tag).words.map(&:tag)
-            debug "checking #{line} against #{pat.size} for #{w_o}"
-            if pat.include?(v) # and message.index(line) != 0
-              debug "#{v.inspect} selected"
+            warning "checking #{line} against #{pat.size} for #{w_o}"
+            if pat.include?(v) || m.address? # and message.index(line) != 0
+              warning "#{v.inspect} selected"
               reply_delay m, line
               return
             end
@@ -606,22 +606,22 @@ class MarkovPlugin < Plugin
           sent = sentence(line)
           v = sent.apply(:tokenize,:tag).words.map(&:tag)
           attempt = 0
-          until attempt > attempts || m.address?
+          until attempt > attempts
             attempt += 1
             line = generate_string(word.first, nil)
             sent = sentence(line)
             v = sent.apply(:tokenize,:tag).words.map(&:tag)
             debug "checking #{line} against #{pat.size} for #{w_o}"
-            if pat.include?(sent.apply(:tokenize,:tag).words.map(&:tag))#and message.index(line) != 0
-              debug "#{v.inspect} selected"
+            if pat.include?(sent.apply(:tokenize,:tag).words.map(&:tag)) || m.address? #and message.index(line) != 0
+              warning "#{v.inspect} selected"
               reply_delay m, line
               return
             end
           end
         end
       end
-    rescue
-      debug "#{$@}"
+    rescue Exception => e
+      warning "#{e.message} #{$@}"
     end
   end
 
