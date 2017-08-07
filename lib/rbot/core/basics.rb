@@ -94,8 +94,8 @@ class BasicsModule < CoreBotModule
   def bot_mem_restart(m, param)
     begin
       x = `ps aux | grep -v 'grep' | grep '#{$$}.*ruby.*rbot' | awk '{print $5}' | head -1`.to_i
-      m.reply x.to_s
-      @bot.restart 'jamie is probably flooding the channel, brb' if x > 1_000_000
+      #m.reply "Using #{x}kb"
+      @bot.restart "I spun around in a circle #{x} times, brb" if x > 1_200_000
     rescue
       m.reply 'something went wrong'
     end

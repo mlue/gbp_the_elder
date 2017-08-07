@@ -311,7 +311,7 @@ class MarkovPlugin < Plugin
     else
       output = word1
       keys = []
-      @chains.each_key(output) do |key|
+      @chains.each_key do |key|
         if key.downcase.include? output
           keys << key
         else
@@ -556,7 +556,7 @@ class MarkovPlugin < Plugin
       debug "chat call #{m.inspect} #{message.inspect}"
       return unless should_talk(m)
 
-      attempts = 400
+      attempts = 200
       words = clean_message(m).split(/\s+/)
 
       if words.length < 2
@@ -602,13 +602,14 @@ class MarkovPlugin < Plugin
           end
         end
         words.sort_by { rand }.each do |word|
-          line = generate_string word.first, nil
+          word = word.first if word.is_a?(Array)
+          line = generate_string word, nil
           sent = sentence(line)
           v = sent.apply(:tokenize,:tag).words.map(&:tag)
           attempt = 0
           until attempt > attempts
             attempt += 1
-            line = generate_string(word.first, nil)
+            line = generate_string(word, nil)
             sent = sentence(line)
             v = sent.apply(:tokenize,:tag).words.map(&:tag)
             debug "checking #{line} against #{pat.size} for #{w_o}"
